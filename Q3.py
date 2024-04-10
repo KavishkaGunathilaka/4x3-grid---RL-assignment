@@ -1,6 +1,7 @@
 from Q2 import NextState
 from tqdm import trange
 
+# Given policy
 pi={
     (1,1):'Move Up',
     (1,2):'Move Up',
@@ -46,9 +47,12 @@ transition_probs = {}
 for (state, action, next_state), count in transition_counts.items():
     if (state, action) not in transition_probs:
         transition_probs[(state, action)] = {}
+    
+    # P(s'|a,s) = No. of times s' has been reached when action 'a' was executed in state 's' / No. of times state 's' was reached and action 'a' was executed
     transition_probs[(state, action)][next_state] = count / sum(transition_counts.get((state, action, (i,j)), 0) for i in range(1, 4) for j in range(1,5))
 
 # Print the estimated transition probabilities
 for key in transition_probs:
     for item in transition_probs[key]:
-        print(f"P({item})|{key}:\t{transition_probs[key][item]}", )
+        print(f"P({item})|{key}:\t{transition_probs[key][item]}")
+        # print(f"({key[0]},'{key[1]}',{item}):{transition_probs[key][item]}")
