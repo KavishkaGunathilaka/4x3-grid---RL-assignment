@@ -74,8 +74,7 @@ class State():
 
 class ValueIterationAgent():
     """
-    Base implementation of a Dynamic Programming Agent for the Grid World Problem
-    env: Gym env the agent will be trained on
+    Implementation of a Agent that uses value iteration for the Grid World Problem
     """
     def __init__(self, gamma):
         self.gamma = gamma
@@ -161,6 +160,9 @@ class ValueIterationAgent():
         pi = {}
         for y in range(1, 4):
             for x in range(1, 5):
+                # (2,2) is not a valid state
+                if (x,y) == (2,2):
+                    continue
                 # Create the state
                 s = State((x,y))
                 self.S.append(s)
@@ -173,9 +175,6 @@ class ValueIterationAgent():
     # Gets the action values for a state by getting the expected return of taking each action
     def getActionValuesForState(self, s, V):
         action_values = []
-        # (2,2) is not a valid state
-        if s.coord == (2,2):
-            return [0]*self.num_states
         for action in range(self.num_actions):
             action_value = 0
             for s_prime in self.S:
@@ -188,7 +187,7 @@ class ValueIterationAgent():
         V, pi = self.initSVAndPi()
 
         # threshold for determing the end of the policy eval loop
-        theta = 0.000001
+        theta = 1e-6
 
         print("Value Iteration 0")
 
