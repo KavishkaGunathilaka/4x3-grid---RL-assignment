@@ -37,6 +37,9 @@ class State():
     
     # Returns a dictionary mapping each action to the following state it would put the agent in from the currrent state
     def _getActionStateTranstions(self):
+        if self.isTerminal():
+            return {UP:(), LEFT:(), RIGHT:(), DOWN:()}
+        
         action_state_transitions = dict()
 
         x, y = self.coord
@@ -179,9 +182,9 @@ class ValueIterationAgent():
             action_value = 0
             for s_prime in self.S:
                 p = s.getNextStateLikelihood(action, s_prime) # P(s'|s,a)
-                action_value += p * (s_prime.getReward() + self.gamma * V[s_prime]) # sum over all s': P(s'|s,a))*(R(s') + gamma*V_s')
-            action_values.append(action_value)
-        return action_values # (sum over all s': P(s'|s,a))*(R(s') + gamma*V_s')) for all actions
+                action_value += p * V[s_prime] # sum over all s': P(s'|s,a)) * V_s'
+            action_values.append(self.gamma * action_value)
+        return action_values # gamma * (sum over all s': P(s'|s,a)) * V_s')) for each action
 
     def valueIterate(self):
         V, pi = self.initSVAndPi()
@@ -208,12 +211,10 @@ class ValueIterationAgent():
                 # set the new state value
                 V[s] = 0
 
-                if s.isTerminal():
-                    continue
+                action_values = np.round(self.getActionValuesForState(s, V), 10) # gamma * (sum over all s': P(s'|s,a)) * V_s')) for each action
+                print(s, action_values)
 
-                action_values = np.round(self.getActionValuesForState(s, V), 10) # (sum over all s': P(s'|s,a))*(R(s') + gamma*V_s')) for all actions
-
-                V[s] = max(action_values)
+                V[s] = s.getReward()+max(action_values)
                 new_best_actions = np.argwhere(action_values == np.max(action_values)).flatten().tolist()
 
                 # Set the likelihood of selecting the new best action in the policy to 1 for all other actions make it 0
