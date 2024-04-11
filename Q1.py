@@ -192,15 +192,15 @@ class ValueIterationAgent():
         # threshold for determing the end of the policy eval loop
         theta = 1e-6
 
-        print("Value Iteration 0")
+        # print("Value Iteration 0")
 
         i = 1
         while True:
-            self._printStateValues(V)
-            self._printPolicy(pi)
-            print("**************************************************************\n")
-            
-            print("Value Iteration", i)
+            # self._printStateValues(V)
+            # self._printPolicy(pi)
+            # print("**************************************************************\n")
+            # print("Value Iteration", i)
+
             # change in state values
             delta = 0
 
@@ -212,7 +212,6 @@ class ValueIterationAgent():
                 V[s] = 0
 
                 action_values = np.round(self.getActionValuesForState(s, V), 10) # gamma * (sum over all s': P(s'|s,a)) * V_s')) for each action
-                print(s, action_values)
 
                 V[s] = s.getReward()+max(action_values)
                 new_best_actions = np.argwhere(action_values == np.max(action_values)).flatten().tolist()
@@ -225,8 +224,6 @@ class ValueIterationAgent():
                         pi[s][action] = 1
 
                 delta = max(delta, abs(v - V[s]))
-
-            
 
             if delta < theta:
                 self._printStateValues(V)
