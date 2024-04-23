@@ -104,11 +104,17 @@ class GLIEAgent():
             expected_utilities.append(expected_utility)
         return expected_utilities # gamma * (sum over all s': P(s'|s,a)) * V_s')) for each action
     
-    def _f(self, u, n):
-        if n <= 5:
-            return 2
-        else:
-            return u
+    def _f(self, U, N, state):
+        f_values = []
+        for action in range(self.num_actions):
+            n = N[(state,action)]
+            u = U[action]
+            if n <= 5:
+                value = 2
+            else:
+                value = u
+            f_values.append(value)
+        return f_values
         
     # Prints the policy as a grid of arrows
     def _printPolicy(self, pi):
@@ -151,9 +157,10 @@ class GLIEAgent():
             for state in self.S:
                 u = U[state]
                 expected_utilities = self._getUtilityForState(state, U)
-                new_best_action = np.argmax(expected_utilities)
-                max_expected_utility = expected_utilities[new_best_action]
-                U[state] = state.getReward() + self._f(max_expected_utility, N[(state,new_best_action)])
+                f_values = self._f(expected_utilities, N, state)
+                new_best_action = np.argmax(f_values)
+                max_f_value = f_values[new_best_action]
+                U[state] = state.getReward() + self.gamma*max_f_value
                 
                 # Update the utilities and visit counts
                 for s in self.S:
@@ -195,6 +202,6 @@ if __name__ == '__main__':
     # printProbs(P)
     
     agent = GLIEAgent(gamma, P, actions)
-    U = agent.GLIE(10000)
+    U = agent.GLIE(100000)
 
     
