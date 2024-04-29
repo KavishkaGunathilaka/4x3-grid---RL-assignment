@@ -208,9 +208,6 @@ class ValueIterationAgent():
                 # current state value
                 v = V[s]
 
-                # set the new state value
-                V[s] = 0
-
                 action_values = np.round(self.getActionValuesForState(s, V), 10) # gamma * (sum over all s': P(s'|s,a)) * V_s')) for each action
 
                 V[s] = s.getReward()+max(action_values)
